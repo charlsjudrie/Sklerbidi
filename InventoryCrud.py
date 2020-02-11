@@ -1,10 +1,10 @@
 from tkinter import *
+from tkinter import ttk
 import tkinter.messagebox as MessageBox 
 import pyodbc
-from datetime import datetime
 
 conn = pyodbc.connect('Driver={SQL Server};'
-                      'Server=COMPLAB212-PC26;'
+                      'Server=BENGBENG;'
                       'Database=db_clothing_line;'
                       'Trusted_Connection=yes;')
 cursor = conn.cursor()
@@ -26,10 +26,9 @@ def insert():
     if(name == "" or price == "" or desc == "" or size == ""):
         MessageBox.showinfo("Insert Status", "All fields are required")
     else:
-        cursor.execute("insert into dbo.Products (name, description, size, price) values ('"+name+"','"+desc+"','"+size+"','"+price+"')")
+        cursor.execute("insert into dbo.Products (name, details, size, price) values ('"+name+"','"+desc+"','"+size+"','"+price+"')")
         cursor.execute("commit")
         clear()
-        show()
         MessageBox.showinfo("Insert Status", "Inserted Succesfully")
         cursor.close()
 
@@ -43,7 +42,6 @@ def delete():
         cursor.execute("delete from dbo.Products where name = '"+name+"'")
         cursor.execute("commit")
         clear()
-        show()
         MessageBox.showinfo("Delete Status", "Sucessfully Deleted")
         cursor.close()
 
@@ -58,10 +56,9 @@ def update():
     if(name == ""):
         MessageBox.showinfo("Update Status", "Name field is empty")
     else:
-        cursor.execute("update dbo.Products SET name = '"+name+"', description = '"+desc+"', size = '"+size+"', price = '"+price+"' WHERE name = '"+name+"'")
+        cursor.execute("update dbo.Products SET name = '"+name+"', details = '"+desc+"', size = '"+size+"', price = '"+price+"' WHERE name = '"+name+"'")
         cursor.execute("commit")
         clear()
-        show()
         MessageBox.showinfo("Update Status", "Sucessfully Deleted")
         cursor.close()
 
@@ -82,14 +79,12 @@ def find():
 
 def show():
     cursor = conn.cursor()
-    list.delete(0,'end')
     cursor.execute("select * from Products")
     rows = cursor.fetchall()
-
     for row in rows:
-        insertData = '  '+str(row[0]) + '         ' + row[1] + '         ' + row[2] + '         ' + row[3] + '         ' + str(row[4])
-        list.insert(list.size()+1, insertData)
-    cursor.close()
+        tv.insert('', 'end', text=row[0], values=(row[0],row[1], row[2], row[3], row[4]))
+
+
 
 crud = Tk()
 crud.geometry("800x500")
@@ -106,16 +101,16 @@ size.place(x=20, y=90)
 price = Label(crud, text = 'Price', font = ("bold", 10))
 price.place(x=20, y=120)
 
-idTxt = Label(crud, text = 'ID', font = ("bold", 10))
-idTxt.place(x=305, y=10)
-nameTxt = Label(crud, text = 'NAME', font = ("bold", 10))
-nameTxt.place(x=330, y=10)
-descTxt = Label(crud, text = 'DETAILS', font = ("bold", 10))
-descTxt.place(x=375, y=10)
-sizeTxt = Label(crud, text = 'SIZE', font = ("bold", 10))
-sizeTxt.place(x=435, y=10)
-priceTxt = Label(crud, text = 'PRICE', font = ("bold", 10))
-priceTxt.place(x=470, y=10)
+#idTxt = Label(crud, text = 'ID', font = ("bold", 10))
+#idTxt.place(x=305, y=10)
+#nameTxt = Label(crud, text = 'NAME', font = ("bold", 10))
+#nameTxt.place(x=330, y=10)
+#descTxt = Label(crud, text = 'DETAILS', font = ("bold", 10))
+#descTxt.place(x=375, y=10)
+#sizeTxt = Label(crud, text = 'SIZE', font = ("bold", 10))
+#sizeTxt.place(x=435, y=10)
+#priceTxt = Label(crud, text = 'PRICE', font = ("bold", 10))
+#priceTxt.place(x=470, y=10)
 
 #Textbox
 e_name = Entry()
@@ -143,8 +138,23 @@ update.place(x = 130, y = 160)
 find = Button(crud, text = "find", font = ("italic", 10), bg = "white", command = find)
 find.place(x = 190, y = 160)
 
-list = Listbox(crud)
-list.place(x = 300, y = 30, width = 230)
+frm = Frame(crud)
+frm.place(x = 300, y = 30)
+
+tv = ttk.Treeview(frm, columns = (1,2,3,4,5), selectmode="extended" ,height = "5", show = "headings")
+tv.pack(expand=YES, fill=BOTH)
+
+tv.heading(1, text = "ID")
+tv.column(1 ,minwidth=0,width=30, stretch=NO, anchor = 'center')
+tv.heading(2, text = "NAME")
+tv.column(2 ,minwidth=0,width=100, stretch=NO, anchor = 'center')
+tv.heading(3, text = "DETAILS")
+tv.column(3 ,minwidth=0,width=100, stretch=NO, anchor = 'center')
+tv.heading(4, text = "SIZE")
+tv.column(4 ,minwidth=0,width=50, stretch=NO, anchor = 'center')
+tv.heading(5, text = "PRICE")
+tv.column(5 ,minwidth=0,width=80, stretch=NO, anchor = 'center')
+
 show()
 
 crud.mainloop()
