@@ -73,6 +73,7 @@ def find():
         MessageBox.showinfo("Find Status", "Name field is empty")
     else:
         cursor.execute("select * from dbo.Products where name = '"+name+"' ")
+        rows = cursor.fetchall()
         for row in rows:
             e_desc.insert(0, row[2])
             e_size.insert(0, row[3])
