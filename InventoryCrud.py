@@ -24,7 +24,7 @@ def insert():
     global id_num
     name = e_name.get().upper()
     desc = e_desc.get().upper()
-    size = e_size.get().upper()
+    size = e_size.get()
     price = e_price.get()
 
     e_search.delete(0,'end')
@@ -61,7 +61,7 @@ def update():
     name = e_name.get()
     desc = e_desc.get()
     size = e_size.get()
-    price = e_price.get()
+    size = e_size.get()
     
     try: Item = tv.selection()[0]; check = True
     except: check = False
@@ -127,17 +127,12 @@ def search_bar(sb):
 crud = Tk()
 crud.title("Inventory")
 crud.resizable(False, False) 
-
 window_height = 400
 window_width = 800
-#fuckyou
-
 screen_width = crud.winfo_screenwidth()
 screen_height = crud.winfo_screenheight()
-
 x_cordinate = int((screen_width/2) - (window_width/2))
 y_cordinate = int((screen_height/2) - (window_height/2))
-
 crud.geometry("{}x{}+{}+{}".format(window_width, window_height, x_cordinate, y_cordinate))
 
 sb = StringVar()
