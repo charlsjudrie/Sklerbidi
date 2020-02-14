@@ -130,6 +130,7 @@ crud.resizable(False, False)
 
 window_height = 400
 window_width = 800
+#fuckyou
 
 screen_width = crud.winfo_screenwidth()
 screen_height = crud.winfo_screenheight()
