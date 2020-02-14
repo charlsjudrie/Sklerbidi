@@ -6,7 +6,7 @@ import pyodbc
 
 #konek detabes
 conn = pyodbc.connect('Driver={SQL Server};'
-                      'Server=BENGBENG;'
+                      'Server=COMPLAB502_PC16;'
                       'Database=db_clothing_line;'
                       'Trusted_Connection=yes;')
 cursor = conn.cursor()
@@ -125,9 +125,19 @@ def search_bar(sb):
         cursor.close()
 
 crud = Tk()
-crud.geometry("800x400")
-crud.title("CRUD")
-crud.resizable(0,0)
+crud.title("Inventory")
+crud.resizable(False, False) 
+
+window_height = 400
+window_width = 800
+
+screen_width = crud.winfo_screenwidth()
+screen_height = crud.winfo_screenheight()
+
+x_cordinate = int((screen_width/2) - (window_width/2))
+y_cordinate = int((screen_height/2) - (window_height/2))
+
+crud.geometry("{}x{}+{}+{}".format(window_width, window_height, x_cordinate, y_cordinate))
 
 sb = StringVar()
 sb.trace("w", lambda name, index, mode, sb=sb: search_bar(sb))
@@ -169,7 +179,7 @@ tv.heading(1, text = "ID")
 tv.column(1 ,minwidth=0,width=30, stretch=NO, anchor = 'center')
 tv.heading(2, text = "NAME")
 tv.column(2 ,minwidth=0,width=120, stretch=NO, anchor = 'center')
-tv.heading(3, text = "DETAILS")
+tv.heading(3, text = "DESCRIPTION")
 tv.column(3 ,minwidth=0,width=150, stretch=NO, anchor = 'center')
 tv.heading(4, text = "SIZE")
 tv.column(4 ,minwidth=0,width=50, stretch=NO, anchor = 'center')
