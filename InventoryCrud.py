@@ -1,6 +1,5 @@
 from tkinter import *
 from tkinter import ttk
-from decimal import Decimal
 import tkinter.messagebox as MessageBox 
 import pyodbc
 
@@ -17,6 +16,7 @@ def clear():
     e_price.delete(first = 0, last = 22)
     e_search.delete(0,'end')
     id_num = ""
+    e_name.focus()
 
 def insert():
     global id_num
@@ -25,14 +25,15 @@ def insert():
         name = e_name.get().upper()
         desc = e_desc.get().upper()
         size = e_size.get().upper()
-        price = float(e_price.get())
+        price = e_price.get()
         
         if(name == "" or price == "" or desc == "" or size == ""): 
             MessageBox.showerror("Insert Status", "All fields are required")
         else:
+            priceCheck = float(price)
             cursor = conn.cursor().execute("insert into dbo.Products (name, description, size, price) values ('"+name+"','"+desc+"','"+size+"','"+price+"')")
             cursor.execute("commit")
-            show() ; clear() ; cursor.close() ; e_name.focus()
+            show() ; clear() ; cursor.close() ; 
             MessageBox.showinfo("Insert Status", "Succesfully Inserted")
     except ValueError: MessageBox.showerror("Error", "Price only accept numbers") ; e_price.delete(first = 0, last = 22)
     except: MessageBox.showerror("Error", "Invalid input")
@@ -110,9 +111,7 @@ def search_bar(sb):
     for row in tv.get_children(): tv.delete(row)
         
     if(len(e_search.get()) == 0):
-        cursor = conn.cursor().execute("select * from Products")
-        rows = cursor.fetchall()
-        for row in rows: tv.insert('', 'end', text=row[0], values=(row[0],row[1], row[2], row[3], row[4]))
+        show()
     else:
         cursor = conn.cursor().execute("select * from Products where '"+e_search.get()+"' like concat(name,'%','%')")
         rows = cursor.fetchall()
@@ -121,7 +120,7 @@ def search_bar(sb):
 
 #MainWindows
 crud = Tk() ; crud.title("Inventory") ; crud.resizable(False, False) 
-window_width = 800 ; window_height = 430
+window_width = 755 ; window_height = 390
 screen_width = crud.winfo_screenwidth() ; screen_height = crud.winfo_screenheight()
 x_cordinate = int((screen_width/2) - (window_width/2)) ; y_cordinate = int((screen_height/2) - (window_height/2))
 crud.geometry("{}x{}+{}+{}".format(window_width, window_height, x_cordinate, y_cordinate))
@@ -140,31 +139,36 @@ search = Label(crud, text = 'SEARCH', font = ("Century Gothic", 11), bg = "#2121
 search.place(x=540, y=15)
 
 #Mga Sulatan
-e_name = Entry(bg = "#BDBDBD", fg = "#212121", font = ("Bahnschrift", 10))
+e_name = Entry(bg = "#BDBDBD", fg = "#212121", font = ("Bahnschrift", 10), bd=0)
 e_name.place(x = 150, y = 49)
-e_desc = Entry(bg = "#BDBDBD", fg = "#212121", font = ("Bahnschrift", 10))
+e_desc = Entry(bg = "#BDBDBD", fg = "#212121", font = ("Bahnschrift", 10), bd=0)
 e_desc.place(x = 150, y = 79)
-e_size = Entry(bg = "#BDBDBD", fg = "#212121", font = ("Bahnschrift", 10))
+e_size = Entry(bg = "#BDBDBD", fg = "#212121", font = ("Bahnschrift", 10), bd=0)
 e_size.place(x = 150, y = 109)
-e_price = Entry(bg = "#BDBDBD", fg = "#212121", font = ("Bahnschrift", 10))
+e_price = Entry(bg = "#BDBDBD", fg = "#212121", font = ("Bahnschrift", 10), bd=0)
 e_price.place(x = 150, y = 139)
 sb = StringVar()
 sb.trace("w", lambda name, index, mode, sb=sb: search_bar(sb))
-e_search = Entry(textvariable=sb)
+e_search = Entry(textvariable=sb, bg = "#BDBDBD", fg = "#212121", font = ("Bahnschrift", 11), bd=0, width = 15)
 e_search.place(x = 609, y = 18)
 
 #Mga Pindutan
-insert = Button(crud, text = "INSERT", font = ("Bahnschrift SemiBold", 11), bg = "#27ae60", fg = "#bdc3c7", command = insert, height = "2")
-insert.place(x = 150, y = 169, width = 145, height= 40)
-update = Button(crud, text = "UPDATE", font = ("Bahnschrift SemiBold", 11), bg = "#2980b9", fg = "#bdc3c7", command = update, height = "2")
-update.place(x = 150, y = 214, width = 145, height= 40)
-delete = Button(crud, text = "DELETE", font = ("Bahnschrift SemiBold", 11), bg = "#c0392b", fg = "#bdc3c7",command = delete, height = "2")
-delete.place(x = 150, y = 259, width = 145, height= 40)
+insert = Button(crud, text = "INSERT", font = ("Bahnschrift SemiBold", 11), bg = "#27ae60", fg = "#ffffff", command = insert, height = "2", bd=0)
+insert.place(x = 150, y = 169, width = 141, height= 40)
+update = Button(crud, text = "UPDATE", font = ("Bahnschrift SemiBold", 11), bg = "#2980b9", fg = "#ffffff", command = update, height = "2", bd=0)
+update.place(x = 300, y = 325, width = 210, height= 40)
+delete = Button(crud, text = "DELETE", font = ("Bahnschrift SemiBold", 11), bg = "#c0392b", fg = "#ffffff",command = delete, height = "2", bd=0)
+delete.place(x = 520, y = 325, width = 210, height= 40)
 
 #Tabla
+style = ttk.Style()
+style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=('Century Gothic', 9)) 
+style.configure("mystyle.Treeview.Heading", font=('Bahnschrift SemiBold', 11)) 
+style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) 
+
 frm = Frame(crud)
 frm.place(x = 300, y = 49, )
-tv = ttk.Treeview(frm, columns = (1,2,3,4,5), selectmode="extended" ,height = "15", show = "headings")
+tv = ttk.Treeview(frm, columns = (1,2,3,4,5), selectmode="extended" ,height = 12, show = "headings", style="mystyle.Treeview")
 tv.pack(expand=YES, fill=BOTH)
 tv.heading(1, text = "ID")
 tv.column(1 ,minwidth=0,width=30, stretch=NO, anchor = 'center')
